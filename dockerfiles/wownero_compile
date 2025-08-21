@@ -21,7 +21,7 @@ ARG THREADS 2
 RUN make -j$THREADS
 
 # Download ban list
-RUN wget -qO /tmp/ban_list.txt "https://raw.githubusercontent.com/Boog900/wownero-ban-list/main/ban_list.txt"
+RUN wget -qO /tmp/ban_list.txt "https://raw.githubusercontent.com/Boog900/monero-ban-list/main/ban_list.txt"
 
 FROM ubuntu:22.04
 
