@@ -120,7 +120,7 @@ umount /dev/sda
 mkdir -p /opt/wownero
 mount /dev/sda /opt/wownero
 rm -rf /opt/wownero/*
-git clone https://github.com/lalanza808/docker-wownero-node /opt/wownero
+git clone https://github.com/ariizona/docker-wownero-node /opt/wownero
 cat << EOF > /opt/wownero/.env
 DATA_DIR=/opt/wownero/data
 GRAFANA_URL=https://${DOMAIN}/grafana
@@ -145,5 +145,5 @@ ONION_ADDR=$(cat /var/lib/tor/wownero/hostname)
 ONION_URL="http://${ONION_ADDR}:34568"
 CLEAR_URL="http://$(hostname).${DOMAIN}:34568"
 
-curl -q -X POST https://wownero.fail/add -d node_url="${ONION_URL}"
-curl -q -X POST https://wownero.fail/add -d node_url="${CLEAR_URL}"
+curl -q -X POST https://monero.fail/add -d node_url="${ONION_URL}"
+curl -q -X POST https://monero.fail/add -d node_url="${CLEAR_URL}"
