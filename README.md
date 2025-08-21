@@ -2,7 +2,7 @@
 
 Simple way to run a Wownero node with some monitoring and anonymity tools packaged in:
 
-* [wownero-exporter](https://github.com/cirocosta/wownero-exporter) - exposes metrics of the daemon
+* [monero-exporter](https://github.com/cirocosta/monero-exporter) - exposes metrics of the daemon
 * [nodemapper](./dockerfiles/nodemapper.py) - gathers GeoIP data for peers
 * [Prometheus](https://prometheus.io/docs/introduction/overview/) - monitors the exporter
 * [Grafana](https://grafana.com/) - shows visualizations and dashboards
