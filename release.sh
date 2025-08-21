@@ -5,7 +5,7 @@
 # Make sure you have set up buildx and QEMU emulation (if building on a different arch).
 #
 # Example usage:
-#   ./release.sh monero
+#   ./release.sh wownero
 #   ./release.sh exporter
 #
 
@@ -13,8 +13,8 @@ set -ex
 
 IMAGE=${1}
 DH_USER=${2:-lalanza808}
-MONERO_VERSION=v0.18.4.0
-MONERO_BASE=${DH_USER}/monero
+WOWNERO_VERSION=v0.11.3.0
+WOWNERO_BASE=${DH_USER}/wownero
 EXPORTER_VERSION=1.0.0
 EXPORTER_BASE=${DH_USER}/exporter
 NODEMAPPER_VERSION=1.0.4
@@ -42,12 +42,12 @@ if [[ "${IMAGE}" == "exporter" ]]; then
         --push
 fi
 
-if [[ "${IMAGE}" == "monero" ]]; then
-    echo -e "[+] Building monero multi-arch (amd64 & arm64)"
+if [[ "${IMAGE}" == "wownero" ]]; then
+    echo -e "[+] Building wownero multi-arch (amd64 & arm64)"
     docker buildx build --platform linux/amd64,linux/arm64 \
-        -t "${MONERO_BASE}:${MONERO_VERSION}" \
-        -t "${MONERO_BASE}:latest" \
-        -f dockerfiles/monero . \
+        -t "${WOWNERO_BASE}:${WOWNERO_VERSION}" \
+        -t "${WOWNERO_BASE}:latest" \
+        -f dockerfiles/wownero . \
         --push
 fi
 

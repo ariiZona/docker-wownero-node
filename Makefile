@@ -25,7 +25,7 @@ down-full: ## Stop the containers
 	docker-compose -f docker-compose.full.yaml down
 
 logs: ## Get logs from the containers
-	docker-compose -f docker-compose.yaml logs -f monerod
+	docker-compose -f docker-compose.yaml logs -f wownerod
 
 logs-full: ## Get logs from the containers
-	docker-compose -f docker-compose.full.yaml logs -f monerod
+	docker-compose -f docker-compose.full.yaml logs -f wownerod

@@ -2,7 +2,7 @@
 
 """
 This is a lightweight web service which will retrieve a peer list
-from a Monero node, determine GeoIP information, and return
+from a Wownero node, determine GeoIP information, and return
 a list of metrics in a Prometheus compatible structure.
 Use it to start plotting maps of active node connections.
 """
@@ -20,8 +20,8 @@ from flask import Flask, make_response
 app = Flask(__name__)
 
 
-NODE_HOST = env.get('NODE_HOST', 'monerod')
-NODE_PORT = env.get('NODE_PORT', 18083)
+NODE_HOST = env.get('NODE_HOST', 'wownerod')
+NODE_PORT = env.get('NODE_PORT', 34570)
 
 
 def get_geoip(ip) -> Union[City, None]:
@@ -55,7 +55,7 @@ def generate_prometheus_line(ip, status) -> Union[str, None]:
 
 @app.route("/metrics")
 def nodes():
-    """Get peer list from monerod and generate Prometheus endpoint output"""
+    """Get peer list from wownerod and generate Prometheus endpoint output"""
     peers_found = list()
     prom_lines = list()
     peer_list = requests.get(f'http://{NODE_HOST}:{NODE_PORT}/get_peer_list').json()

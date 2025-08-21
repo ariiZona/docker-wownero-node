@@ -34,13 +34,13 @@ Log notice stdout
 ORPort 127.0.0.1:9001
 PublishServerDescriptor 0
 SOCKSPort 9051
-HiddenServiceDir /var/lib/tor/monero
-HiddenServicePort 18081
+HiddenServiceDir /var/lib/tor/wownero
+HiddenServicePort 34568
 EOF
 systemctl enable tor
 systemctl restart tor
 sleep 20
-cp /var/lib/tor/monero/hostname /var/www/tor/index.html
+cp /var/lib/tor/wownero/hostname /var/www/tor/index.html
 chown -R nobody:nogroup /var/www/tor
 chmod 644 /var/www/tor/index.html
 
@@ -112,38 +112,38 @@ certbot certonly --standalone -d ${DOMAIN} --agree-tos -m ${ACME_EMAIL} -n
 service nginx start
 
 # Setup app users
-useradd -m -s $(which false) monero
-usermod -aG docker monero
+useradd -m -s $(which false) wownero
+usermod -aG docker wownero
 
-# Setup Monero node
+# Setup Wownero node
 umount /dev/sda
-mkdir -p /opt/monero
-mount /dev/sda /opt/monero
-rm -rf /opt/monero/*
-git clone https://github.com/lalanza808/docker-monero-node /opt/monero
-cat << EOF > /opt/monero/.env
-DATA_DIR=/opt/monero/data
+mkdir -p /opt/wownero
+mount /dev/sda /opt/wownero
+rm -rf /opt/wownero/*
+git clone https://github.com/lalanza808/docker-wownero-node /opt/wownero
+cat << EOF > /opt/wownero/.env
+DATA_DIR=/opt/wownero/data
 GRAFANA_URL=https://${DOMAIN}/grafana
 GF_SERVER_SERVE_FROM_SUB_PATH=true
-P2P_PORT=18080
-RESTRICTED_PORT=18081
-ZMQ_PORT=18082
-UNRESTRICTED_PORT=18083
+P2P_PORT=34567
+RESTRICTED_PORT=34568
+ZMQ_PORT=34569
+UNRESTRICTED_PORT=34570
 GF_AUTH_ANONYMOUS_ENABLED=true
 GF_AUTH_BASIC_ENABLED=true
 GF_AUTH_DISABLE_LOGIN_FORM=false
 GF_SECURITY_ADMIN_PASSWORD=${GRAF_PASS}
 GF_SECURITY_ADMIN_USER=${GRAF_USER}
 EOF
-chown -R monero:monero /opt/monero
+chown -R wownero:wownero /opt/wownero
 
-# Run Monero node as monero user
-sudo -u monero bash -c "cd /opt/monero && make up"
+# Run Wownero node as wownero user
+sudo -u wownero bash -c "cd /opt/wownero && make up"
 
-# Post nodes to monero.fail
-ONION_ADDR=$(cat /var/lib/tor/monero/hostname)
-ONION_URL="http://${ONION_ADDR}:18081"
-CLEAR_URL="http://$(hostname).${DOMAIN}:18081"
+# Post nodes to wownero.fail
+ONION_ADDR=$(cat /var/lib/tor/wownero/hostname)
+ONION_URL="http://${ONION_ADDR}:34568"
+CLEAR_URL="http://$(hostname).${DOMAIN}:34568"
 
-curl -q -X POST https://monero.fail/add -d node_url="${ONION_URL}"
-curl -q -X POST https://monero.fail/add -d node_url="${CLEAR_URL}"
+curl -q -X POST https://wownero.fail/add -d node_url="${ONION_URL}"
+curl -q -X POST https://wownero.fail/add -d node_url="${CLEAR_URL}"

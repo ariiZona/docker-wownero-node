@@ -1,0 +1,39 @@
+FROM ubuntu:22.04 AS og
+
+ENV DEBIAN_FRONTEND noninteractive
+ENV WOWNERO_RELEASE v0.11.3.0
+
+WORKDIR /opt/wownero
+
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential cmake pkg-config libboost-all-dev \
+    libssl-dev libzmq3-dev libunbound-dev libsodium-dev libpgm-dev git wget
+
+# Clone wownero repo
+RUN git clone https://github.com/wownero-project/wownero --branch=$WOWNERO_RELEASE --depth=1 .
+
+# Clone submodules
+RUN git submodule update --init --force
+
+# Compile wownero
+ARG THREADS 2
+RUN make -j$THREADS
+
+# Download ban list
+RUN wget -qO /tmp/ban_list.txt "https://raw.githubusercontent.com/Boog900/wownero-ban-list/main/ban_list.txt"
+
+FROM ubuntu:22.04
+
+WORKDIR /data
+
+COPY --from=og /usr/lib/x86_64-linux-gnu/ /usr/lib/x86_64-linux-gnu/
+COPY --from=og /opt/wownero/build/Linux/_no_branch_/release/bin/wownerod /bin/wownerod
+COPY --from=og /opt/wownero/build/Linux/_no_branch_/release/bin/wownero-wallet-cli /bin/wownero-wallet-cli
+COPY --from=og /opt/wownero/build/Linux/_no_branch_/release/bin/wownero-wallet-rpc /bin/wownero-wallet-rpc
+COPY --from=og /tmp/ban_list.txt /ban_list.txt
+
+EXPOSE 34567
+EXPOSE 34568
+EXPOSE 34569
+EXPOSE 34570

@@ -6,8 +6,8 @@ Log notice stdout
 PublishServerDescriptor 0
 SOCKSPort 0.0.0.0:9050
 
-HiddenServiceDir /var/lib/tor/monerod-rpc
-HiddenServicePort 18081 monerod:18081
+HiddenServiceDir /var/lib/tor/wownerod-rpc
+HiddenServicePort 34568 wownerod:34568
 
-HiddenServiceDir /var/lib/tor/monerod
-HiddenServicePort 18084 monerod:18084
+HiddenServiceDir /var/lib/tor/wownerod
+HiddenServicePort 34571 wownerod:34571

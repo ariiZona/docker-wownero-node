@@ -24,7 +24,7 @@ services:
       - --config.file=/etc/prometheus/config.yaml
       - --storage.tsdb.path=/prometheus
       - --storage.tsdb.retention.time=${PROM_RETENTION:-360d}
-    container_name: monerod_prometheus
+    container_name: wownerod_prometheus
     restart: unless-stopped
     depends_on:
       exporter:
@@ -41,7 +41,7 @@ services:
     user: "1000"
     command:
       - -config=/etc/grafana/grafana.ini
-    container_name: monerod_grafana
+    container_name: wownerod_grafana
     restart: unless-stopped
     image: grafana/grafana:${GRAFANA_TAG:-10.1.4}
     ports:
@@ -68,42 +68,42 @@ services:
       - tor_net
     <<: *log-config
   exporter:
-    container_name: monerod_exporter
+    container_name: wownerod_exporter
     image: lalanza808/exporter:1.0.0
     build:
       context: .
       dockerfile: dockerfiles/exporter
     restart: unless-stopped
     depends_on:
-      monerod:
+      wownerod:
         condition: service_started
     # ports:
     #   - 127.0.0.1:9000:9000
     command:
-      - --monero-addr=http://monerod:${UNRESTRICTED_PORT:-18083}
+      - --wownero-addr=http://wownerod:${UNRESTRICTED_PORT:-34570}
     networks:
       - tor_net
     <<: *log-config
   nodemapper:
-    container_name: monerod_nodemapper
+    container_name: wownerod_nodemapper
     image: lalanza808/nodemapper:1.0.4
     restart: unless-stopped
     build:
       context: .
       dockerfile: dockerfiles/nodemapper
     depends_on:
-      monerod:
+      wownerod:
         condition: service_started
     environment:
-      NODE_HOST: monerod
-      NODE_PORT: 18083
+      NODE_HOST: wownerod
+      NODE_PORT: 34570
     # ports:
     #   - 127.0.0.1:${MAPPER_PORT:-5000}:5000
     networks:
       - tor_net
     <<: *log-config
   tor:
-    container_name: monerod_tor
+    container_name: wownerod_tor
     image: lalanza808/tor:1.0.2
     build:
       context: .
@@ -112,14 +112,14 @@ services:
     # ports:
       # - 127.0.0.1:9050:9050
     volumes:
-      - tor:/var/lib/tor/monerod
-      - tor:/var/lib/tor/monerod-rpc
+      - tor:/var/lib/tor/wownerod
+      - tor:/var/lib/tor/wownerod-rpc
     networks:
       tor_net:
         ipv4_address: 172.31.255.250
     <<: *log-config
   i2p:
-    container_name: monerod_i2p
+    container_name: wownerod_i2p
     image: lalanza808/i2p:1.0.0
     build:
       context: .
@@ -132,23 +132,23 @@ services:
       tor_net:
         ipv4_address: 172.31.255.251
     <<: *log-config
-  monerod:
-    container_name: monerod
-    image: lalanza808/monero:v0.18.4.0
+  wownerod:
+    container_name: wownerod
+    image: lalanza808/wownero:v0.11.3.0
     build:
       context: .
-      dockerfile: dockerfiles/monero
+      dockerfile: dockerfiles/wownero
     restart: unless-stopped
     volumes:
       - ${DATA_DIR:-./data}:/data
-      - tor:/var/lib/tor/monerod:ro
-      - tor:/var/lib/tor/monerod-rpc:ro
+      - tor:/var/lib/tor/wownerod:ro
+      - tor:/var/lib/tor/wownerod-rpc:ro
     ports:
-      - ${P2P_PORT:-18080}:18080                    # p2p
-      - ${RESTRICTED_PORT:-18081}:18081             # restricted rpc
-      - 127.0.0.1:${ZMQ_PORT:-18082}:18082          # zmq
-      - 127.0.0.1:${UNRESTRICTED_PORT:-18083}:18083 # unrestricted rpc
-      - 127.0.0.1:${P2P_TOR:-18084}:18084           # tor anonymous-inbound
+      - ${P2P_PORT:-34567}:34567                    # p2p
+      - ${RESTRICTED_PORT:-34568}:34568             # restricted rpc
+      - 127.0.0.1:${ZMQ_PORT:-34569}:34569          # zmq
+      - 127.0.0.1:${UNRESTRICTED_PORT:-34570}:34570 # unrestricted rpc
+      - 127.0.0.1:${P2P_TOR:-34571}:34571           # tor anonymous-inbound
     networks:
       - tor_net
     command:

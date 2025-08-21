@@ -1,0 +1,67 @@
+FROM ubuntu:22.04 AS og
+
+# Define the Wownero version
+ENV WOWNERO_VERSION=v0.11.3.0
+
+ENV WOWNERO_HASH_X64=dddb23ca97575d5538a3a3b6a23e49706db15657e124c2300ea7972cb44a0387
+ENV WOWNERO_DL_URL_X64=https://codeberg.org/wownero/wownero/releases/download/${WOWNERO_VERSION}/wownero-x86_64-linux-gnu-${WOWNERO_VERSION}.tar.bz2
+ENV WOWNERO_HASH_ARMV8=9c201e1f3a6c5064927d54dfa34ee0e2a21368c08725e536e446710e1d3a1d85
+ENV WOWNERO_DL_URL_ARMV8=https://codeberg.org/wownero/wownero/releases/download/${WOWNERO_VERSION}/wownero-aarch64-linux-gnu-${WOWNERO_VERSION}.tar.bz2
+ENV WOWNERO_DL_FILE=wownero.tar.bz2
+ENV WOWNERO_SUMS_FILE=sha256sums
+
+WORKDIR /opt/wownero
+
+# Update system and install dependencies
+RUN apt-get update \
+  && apt-get upgrade -y \
+  && apt-get install -y tar wget bzip2
+
+# Download Wownero binaries from codeberg.org
+# Confirm hashes match
+# Install daemon binary
+# Clean up
+RUN \
+  # Detect architecture and set URL/hash accordingly \
+  if [ "$(uname -m)" = "x86_64" ]; then \
+    echo "Architecture x86_64 detected"; \
+    export WOWNERO_DL_URL=${WOWNERO_DL_URL_X64}; \
+    export WOWNERO_HASH=${WOWNERO_HASH_X64}; \
+  elif [ "$(uname -m)" = "aarch64" ]; then \
+    echo "Architecture ARM64 detected"; \
+    export WOWNERO_DL_URL=${WOWNERO_DL_URL_ARMV8}; \
+    export WOWNERO_HASH=${WOWNERO_HASH_ARMV8}; \
+  else \
+    echo "Unsupported architecture: $(uname -m)"; exit 1; \
+  fi && \
+  echo "Using URL: ${WOWNERO_DL_URL}" && \
+  wget -qO ${WOWNERO_DL_FILE} ${WOWNERO_DL_URL} && \
+  echo "${WOWNERO_HASH}  ${WOWNERO_DL_FILE}" > ${WOWNERO_SUMS_FILE} && \
+  sha256sum -c ${WOWNERO_SUMS_FILE}; \
+  if [ "$?" -eq 0 ]; then \
+    echo -e "[+] Hashes match - proceeding with container build"; \
+  else \
+    echo -e "[!] Hashes do not match - exiting"; \
+    exit 5; \
+  fi && \
+  mkdir ./tmp && \
+  tar xjf ${WOWNERO_DL_FILE} -C ./tmp --strip 1 && \
+  mv ./tmp/* /usr/local/bin/ && \
+  rm -rf ./tmp ${WOWNERO_SUMS_FILE} ${WOWNERO_DL_FILE}
+
+# Download ban list
+RUN wget -qO /tmp/ban_list.txt "https://raw.githubusercontent.com/Boog900/monero-ban-list/main/ban_list.txt"
+
+# Copy to fresh Ubuntu image to reduce size
+FROM ubuntu:22.04
+COPY --from=og /usr/local/bin/wownerod /usr/local/bin/wownerod
+COPY --from=og /usr/local/bin/wownero-wallet-cli /usr/local/bin/wownero-wallet-cli
+COPY --from=og /usr/local/bin/wownero-wallet-rpc /usr/local/bin/wownero-wallet-rpc
+COPY --from=og /tmp/ban_list.txt /ban_list.txt
+COPY ./dockerfiles/wownerod_entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+EXPOSE 34567
+EXPOSE 34568
+EXPOSE 34569
+EXPOSE 34570
