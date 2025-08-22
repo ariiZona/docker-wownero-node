@@ -338,7 +338,7 @@
             "uid": "P1809F7CD0C75ACF3"
           },
           "exemplar": true,
-          "expr": "wownero_info_mainnet",
+          "expr": "monero_info_mainnet",
           "instant": false,
           "interval": "",
           "legendFormat": "mainnet",
@@ -1453,7 +1453,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "wownero_net_rx_bytes",
+          "expr": "monero_net_rx_bytes",
           "interval": "",
           "legendFormat": "in",
           "range": true,
@@ -2463,7 +2463,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "monero_transaction_pool_fees_wownero",
+          "expr": "monero_transaction_pool_fees_monero",
           "interval": "2m",
           "legendFormat": "fee",
           "range": true,
@@ -2656,7 +2656,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "monero_lastblock_reward_wownero",
+          "expr": "monero_lastblock_reward_monero",
           "interval": "",
           "legendFormat": "total rewards",
           "refId": "A"
