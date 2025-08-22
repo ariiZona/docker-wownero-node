@@ -80,7 +80,7 @@ services:
     # ports:
     #   - 127.0.0.1:9000:9000
     command:
-      - --wownero-addr=http://wownerod:${UNRESTRICTED_PORT:-34570}
+      - --monero-addr=http://wownerod:${UNRESTRICTED_PORT:-34570}
     networks:
       - tor_net
     <<: *log-config
