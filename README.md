@@ -1,4 +1,4 @@
-# docker-wownero-node (NOT WORKING YET)
+# docker-wownero-node
 
 Simple way to run a Wownero node with some monitoring and anonymity tools packaged in:
 
