@@ -1,7 +1,7 @@
 FROM golang:bullseye AS OG
 
 # Install exporter from Github
-RUN go install github.com/cirocosta/monero-exporter/cmd/monero-exporter@master
+RUN go install github.com/ariizona/monero-exporter/cmd/monero-exporter@master
 
 # Copy installed binary to fresh Ubuntu image
 FROM ubuntu:22.04
